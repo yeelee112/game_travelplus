@@ -155,57 +155,78 @@
     
     const db = createClient(supabaseUrl, supabaseKey)
 
-    const totalQuestions = 3
-    let currentIndex = 0
-    let currentGroup = ""
+  const totalQuestions = 30
+  let currentIndex = 0
+  let currentGroup = ""
 
-    function startQuiz() {
-      const selected = document.getElementById("groupSelect").value
-      if (!selected) {
-        alert("Vui lòng chọn nhóm trước khi bắt đầu!")
-        return
-      }
-      currentGroup = selected
+  // Khôi phục trạng thái nếu có
+  window.onload = function() {
+    const savedGroup = localStorage.getItem("quiz_group")
+    const savedIndex = localStorage.getItem("quiz_index")
+    if (savedGroup && savedIndex !== null) {
+      currentGroup = savedGroup
+      currentIndex = parseInt(savedIndex)
       document.getElementById("groupContainer").style.display = "none"
       document.getElementById("formContainer").style.display = "block"
       updateLabel()
-    }
-
-    function updateLabel() {
-      document.getElementById("questionLabel").innerText = `Câu ${currentIndex + 1}:`
-    }
-
-    async function nextQuestion() {
-      const input = document.getElementById("answerInput")
-      const answer = input.value.trim()
-
-      // Lưu vào Supabase
-      const { data, error } = await db
-        .from("quiz_results")
-        .insert([{
-          group_name: currentGroup,
-          question_number: currentIndex + 1,
-          answer: answer
-        }])
-
-      if (error) {
-        console.error(error)
-        alert("Lỗi khi lưu dữ liệu!")
-        return
-      }
-
-      console.log("Đã lưu:", data)
-
-      currentIndex++
-      input.value = ""
-
       if (currentIndex >= totalQuestions) {
         document.getElementById("formContainer").style.display = "none"
         document.getElementById("doneContainer").style.display = "block"
-      } else {
-        updateLabel()
       }
     }
+  }
+
+  function startQuiz() {
+    const selected = document.getElementById("groupSelect").value
+    if (!selected) {
+      alert("Vui lòng chọn nhóm trước khi bắt đầu!")
+      return
+    }
+    currentGroup = selected
+    currentIndex = 0
+    localStorage.setItem("quiz_group", currentGroup)
+    localStorage.setItem("quiz_index", currentIndex)
+    document.getElementById("groupContainer").style.display = "none"
+    document.getElementById("formContainer").style.display = "block"
+    updateLabel()
+  }
+
+  function updateLabel() {
+    document.getElementById("questionLabel").innerText = `Câu ${currentIndex + 1}:`
+  }
+
+  async function nextQuestion() {
+    const input = document.getElementById("answerInput")
+    const answer = input.value.trim()
+
+    // Lưu vào Supabase
+    const { data, error } = await db
+      .from("quiz_results")
+      .insert([{
+        group_name: currentGroup,
+        question_number: currentIndex + 1,
+        answer: answer
+      }])
+
+    if (error) {
+      console.error(error)
+      alert("Lỗi khi lưu dữ liệu!")
+      return
+    }
+
+    console.log("Đã lưu:", data)
+
+    currentIndex++
+    localStorage.setItem("quiz_index", currentIndex)
+    input.value = ""
+
+    if (currentIndex >= totalQuestions) {
+      document.getElementById("formContainer").style.display = "none"
+      document.getElementById("doneContainer").style.display = "block"
+    } else {
+      updateLabel()
+    }
+  }
   </script>
 </body>
 </html>
