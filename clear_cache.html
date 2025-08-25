@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Xóa Cache Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #f7f7fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .box {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(60,60,120,0.08);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    h2 {
+      color: #3a3a7c;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 17px;
+      color: #444;
+    }
+    button {
+      background: linear-gradient(90deg, #87AF45 0%, #009cde 100%);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 18px;
+      box-shadow: 0 2px 8px rgba(60,60,120,0.08);
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #57702e 0%, #006c9a 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Xóa Cache Quiz</h2>
+    <p>Nhấn nút bên dưới để xóa cache quiz đã lưu trên trình duyệt.</p>
+    <button onclick="clearCache()">Xóa Cache</button>
+    <p id="result" style="margin-top:16px;"></p>
+  </div>
+  <script>
+    function clearCache() {
+      localStorage.removeItem("quiz_index");
+      localStorage.removeItem("quiz_time");
+      localStorage.removeItem("quiz_group");
+      document.getElementById("result").innerText = "Đã xóa cache thành công!";
+    }
+  </script>
+</body>
+</html>
