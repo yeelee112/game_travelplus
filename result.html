@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả Quiz</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f9f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+
+        .correct {
+            color: #87AF45;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        h2 {
+            text-align: center;
+            color: #009CDE;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #898989;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f9f1;
+        }
+
+        @media (max-width: 600px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            tr {
+                margin-bottom: 12px;
+                background: #fff;
+                border-radius: 8px;
+                padding: 10px;
+                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            td {
+                text-align: left;
+                padding: 6px 0;
+            }
+
+            td:before {
+                font-weight: bold;
+                display: inline-block;
+                width: 120px;
+            }
+
+            td:nth-of-type(1):before {
+                content: "Nhóm";
+            }
+
+            td:nth-of-type(2):before {
+                content: "Câu số";
+            }
+
+            td:nth-of-type(3):before {
+                content: "Trả lời";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Thời gian";
+            }
+
+
+            #tableContainer > table > tbody > tr:last-child{
+                background-color: #74a9fb;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Kết quả các nhóm</h2>
+    <div id="tableContainer">Đang tải dữ liệu...</div>
+
+    <script>
+        const { createClient } = supabase
+        const supabaseUrl = "https://kmmrxmvvgpczbdisqztz.supabase.co"   // thay bằng URL
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttbXJ4bXZ2Z3BjemJkaXNxenR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4MzY2NzIsImV4cCI6MjA3MTQxMjY3Mn0.7GoZNFw37gmtCObTpE5X_IVMBtrMcasglt-SQfO68og"                     // thay bằng anon key
+
+        const db = createClient(supabaseUrl, supabaseKey)
+        async function loadResults() {
+            // Lấy tất cả câu trả lời của nhóm
+            const { data: results, error: err1 } = await db
+                .from("quiz_results")
+                .select("*")
+                .order("question_number", { ascending: true })
+
+            // Lấy đáp án chuẩn
+            const { data: answers, error: err2 } = await db
+                .from("answer")
+                .select("*")
+
+            if (err1 || err2) {
+                document.getElementById("tableContainer").innerText = "Lỗi tải dữ liệu!"
+                console.error(err1 || err2)
+                return
+            }
+
+            if (!results || results.length === 0) {
+                document.getElementById("tableContainer").innerText = "Chưa có dữ liệu."
+                return
+            }
+
+            // Danh sách nhóm
+            const groups = [...new Set(results.map(r => r.group_name))]
+
+            // Gom kết quả theo câu số
+            const byQuestion = {}
+            results.forEach(r => {
+                if (!byQuestion[r.question_number]) byQuestion[r.question_number] = {}
+                byQuestion[r.question_number][r.group_name] = r.answer
+            })
+
+            // Gom đáp án đúng theo id
+            const answerMap = {}
+            answers.forEach(a => {
+                answerMap[a.id] = a.answer
+            })
+
+            // Render bảng
+            let html = "<table><tr><th>Câu số</th>"
+            groups.forEach(g => html += `<th>${g}</th>`)
+            html += "<th>Đáp án</th></tr>"
+
+            const groupCorrect = {}
+
+            Object.keys(byQuestion).sort((a,b)=>a-b).forEach(q => {
+                html += `<tr><td>${q}</td>`
+                groups.forEach(g => {
+                    const ans = byQuestion[q][g] || ""
+                    let cls = ""
+                    if (ans) {
+                    if (ans.trim().toLowerCase() === (answerMap[q] || "").trim().toLowerCase()) {
+                        cls = "correct"
+                        groupCorrect[g] = (groupCorrect[g] || 0) + 1
+                    } else {
+                        cls = "wrong"
+                    }
+                    }
+                    html += `<td class="${cls}">${ans}</td>`
+                })
+                html += `<td>${answerMap[q] || ""}</td></tr>`
+                })
+
+                // Thêm row tổng kết
+                html += `<tr><th style=" background: #74a9fb; ">Tổng đúng</th>`
+                groups.forEach(g => {
+                html += `<th style=" background: #74a9fb; ">${groupCorrect[g] || 0}</th>`
+                })
+                html += `<th style=" background: #74a9fb; "></th></tr>`
+
+            html += "</table>"
+            document.getElementById("tableContainer").innerHTML = html
+        }
+
+        loadResults()
+    </script>
+</body>
+
+</html>
