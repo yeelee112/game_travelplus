@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: radial-gradient(circle, #ff9966, #ff5e62);
+  color: white;
+ padding: 12px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* ===== INPUT ===== */
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  margin: 0 auto 18px auto;
+  display: block;
+}
+
+/* ===== WHEEL WRAPPER ===== */
+.wheel-wrapper {
+  position: relative;
+  width: 600px;   /* tăng lên 600px cho máy tính */
+  height: 600px;
+  margin: 20px auto;
+}
+/* Canvas full wrapper */
+canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: white;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+  body {
+    padding: 0; /* bỏ padding để full màn hình */
+  }
+
+  .wheel-wrapper {
+    width: 100vw;
+    height: 100vw;
+    margin: 10px 0;
+  }
+}
+/* ===== POINTER ===== */
+.pointer {
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 35px solid #fff;
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* ===== BUTTON ===== */
+button {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background: gray;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ===== HISTORY ===== */
+ul {
+  list-style: none;
+  padding: 0;
+  max-width: 500px;
+  margin: 10px auto;
+}
+
+ul li {
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 22px;
+  }
+
+  h2, h3 {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 768px) {
+  input {
+    max-width: 500px;
+  }
+}
+
+/* ===== MODAL ===== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  color: #333;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  animation: popIn 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #ff5e62;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
