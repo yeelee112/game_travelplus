@@ -1,235 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz Form</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      background: #f7f7fa;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      color: #009cde;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-    }
-    #groupContainer, #formContainer, #doneContainer {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(60,60,120,0.08);
-      padding: 32px 24px;
-      margin-top: 24px;
-      min-width: 320px;
-      max-width: 90vw;
-      text-align: center;
-    }
-    label {
-      font-weight: 500;
-      color: #444;
-      margin-right: 8px;
-    }
-    select, input[type="text"] {
-      padding: 8px 12px;
-      border: 1px solid #bdbdbd;
-      border-radius: 6px;
-      font-size: 16px;
-      margin-bottom: 12px;
-      width: 70%;
-      box-sizing: border-box;
-      transition: border-color 0.2s;
-    }
-    select:focus, input[type="text"]:focus {
-      border-color: #3a3a7c;
-      outline: none;
-    }
-    button {
-      background: linear-gradient(90deg, #87AF45 0%, #009cde 100%);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 24px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      box-shadow: 0 2px 8px rgba(60,60,120,0.08);
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: linear-gradient(90deg, #57702e 0%, #006c9a 100%);
-    }
-    #questionLabel {
-      font-size: 18px;
-      font-weight: 500;
-      color: #3a3a7c;
-      margin-bottom: 16px;
-    }
-    #doneContainer h2 {
-      color: #3a3a7c;
-      margin-bottom: 8px;
-    }
-    #doneContainer p {
-      font-size: 17px;
-      color: #444;
-    }
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 24px;
-        margin-top: 20px;
-        margin-bottom: 10px;
-      }
-      #groupContainer, #formContainer, #doneContainer {
-        padding: 24px 12px;
-        min-width: unset;
-        width: 100vw;
-        margin-top: 8px;
-      }
-      select, input[type="text"] {
-        font-size: 20px;
-        width: 100%;
-        padding: 16px 12px;
-      }
-      button {
-        font-size: 20px;
-        padding: 18px 0;
-        width: 100%;
-        margin-top: 14px;
-      }
-      #questionLabel {
-        font-size: 20px;
-        margin-bottom: 12px;
-      }
-      #doneContainer h2 {
-        font-size: 22px;
-      }
-      #doneContainer p {
-        font-size: 18px;
-      }
-    }
-  </style>
+  <title>Vòng Quay May Mắn</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div style="width:100%;display:flex;justify-content:center;align-items:center;margin-top:32px;">
-    <img src="https://travelplusvn.com/public/frontend/images/logo.png" alt="TravelPlus Logo" style="max-width:320px;width:60%;height:auto;">
-  </div>
-  <h1>Đuổi hình bắt chữ</h1>
 
-  <!-- Chọn nhóm -->
-  <div id="groupContainer">
-    <label>Chọn nhóm: </label>
-    <select id="groupSelect">
-      <option value="">--Chọn đi--</option>
-      <option value="Kế Toán">Kế Toán</option>
-      <option value="Nhân Sự">Nhân Sự</option>
-      <option value="VP HCM">Điều hành VP HCM</option>
-      <option value="VP Đà Nẵng">VP Đà Nẵng</option>
-      <option value="VP Hà Nội">VP Hà Nội</option>
+<div class="container">
+  <h1>🎉 VÒNG QUAY MAY MẮN 🎉</h1>
 
-    </select>
-    <button onclick="startQuiz()">Bắt đầu</button>
+  <input type="text" id="username" placeholder="Nhập tên của bạn">
+
+  <div class="wheel-wrapper">
+    <div class="pointer"></div>
+    <canvas id="wheel" width="500" height="500"></canvas>
   </div>
 
-  <!-- Form nhập câu trả lời -->
-  <div id="formContainer" style="display:none;">
-    <p id="questionLabel">Câu 1:</p>
-    <input type="text" id="answerInput" placeholder="Nhập câu trả lời..." />
-    <button onclick="nextQuestion()">Tiếp theo</button>
+  <button id="spinBtn">QUAY NGAY</button>
+
+  <h2>Kết quả mới nhất:</h2>
+  <div id="latestResult"></div>
+
+  <h3>Lịch sử gần đây:</h3>
+  <ul id="history"></ul>
+  <div id="prizeModal" class="modal">
+  <div class="modal-content">
+    <h2>🎉 CHÚC MỪNG 🎉</h2>
+    <p id="modalPrizeText"></p>
+    <button id="closeModal">ĐÓNG</button>
   </div>
+</div>
+</div>
 
-  <!-- Hoàn tất -->
-  <div id="doneContainer" style="display:none;">
-    <h2>Hoàn tất!</h2>
-    <p>Cảm ơn nhóm đã tham gia 🎉</p>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="main.js"></script>
 
-  <script>
-    const { createClient } = supabase
-    const supabaseUrl = "https://kmmrxmvvgpczbdisqztz.supabase.co"   // thay bằng URL
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttbXJ4bXZ2Z3BjemJkaXNxenR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4MzY2NzIsImV4cCI6MjA3MTQxMjY3Mn0.7GoZNFw37gmtCObTpE5X_IVMBtrMcasglt-SQfO68og"                     // thay bằng anon key
-    
-    const db = createClient(supabaseUrl, supabaseKey)
-
-  const totalQuestions = 30
-  let currentIndex = 0
-  let currentGroup = ""
-
-  // Khôi phục trạng thái nếu có
-  window.onload = function() {
-    const savedGroup = localStorage.getItem("quiz_group")
-    const savedIndex = localStorage.getItem("quiz_index")
-    if (savedGroup && savedIndex !== null) {
-      currentGroup = savedGroup
-      currentIndex = parseInt(savedIndex)
-      document.getElementById("groupContainer").style.display = "none"
-      document.getElementById("formContainer").style.display = "block"
-      updateLabel()
-      if (currentIndex >= totalQuestions) {
-        document.getElementById("formContainer").style.display = "none"
-        document.getElementById("doneContainer").style.display = "block"
-      }
-    }
-  }
-
-  function startQuiz() {
-    const selected = document.getElementById("groupSelect").value
-    if (!selected) {
-      alert("Vui lòng chọn nhóm trước khi bắt đầu!")
-      return
-    }
-    currentGroup = selected
-    currentIndex = 0
-    localStorage.setItem("quiz_group", currentGroup)
-    localStorage.setItem("quiz_index", currentIndex)
-    document.getElementById("groupContainer").style.display = "none"
-    document.getElementById("formContainer").style.display = "block"
-    updateLabel()
-  }
-
-  function updateLabel() {
-    document.getElementById("questionLabel").innerText = `Câu ${currentIndex + 1}:`
-  }
-
-  async function nextQuestion() {
-    const input = document.getElementById("answerInput")
-    const answer = input.value.trim()
-
-    // Lưu vào Supabase
-    const { data, error } = await db
-      .from("quiz_results")
-      .insert([{
-        group_name: currentGroup,
-        question_number: currentIndex + 1,
-        answer: answer
-      }])
-
-    if (error) {
-      console.error(error)
-      alert("Lỗi khi lưu dữ liệu!")
-      return
-    }
-
-    console.log("Đã lưu:", data)
-
-    currentIndex++
-    localStorage.setItem("quiz_index", currentIndex)
-    input.value = ""
-
-    if (currentIndex >= totalQuestions) {
-      document.getElementById("formContainer").style.display = "none"
-      document.getElementById("doneContainer").style.display = "block"
-    } else {
-      updateLabel()
-    }
-  }
-  </script>
 </body>
 </html>
