@@ -57,10 +57,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     { id: 11, label: "100.000 VNĐ" },
     { id: 12, label: "100.000 VNĐ" },
     { id: 13, label: "100.000 VNĐ" },
-    { id: 14, label: "50.000 VNĐ" },
-    { id: 15, label: "50.000 VNĐ" },
+    { id: 14, label: "100.000 VNĐ" },
+    { id: 15, label: "100.000 VNĐ" },
     { id: 16, label: "50.000 VNĐ" },
-    { id: 17, label: "Câu chúc" },
+    { id: 17, label: "50.000 VNĐ" },
   ];
 
   const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#577590","#277da1"];
