@@ -6,7 +6,7 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   text-align: center;
-  background: radial-gradient(circle, #ff9966, #ff5e62);
+  background-image: url('background.jpg');
   color: white;
  padding: 12px;
 }
