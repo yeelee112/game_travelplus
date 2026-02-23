@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function showPrizeModal(name, prize) {
     modalPrizeText.innerHTML =
-        `<strong>${name}</strong><br><span style="font-size:22px;color:#ff5e62">${prize}</span>`;
+        `<strong style="font-size: 40px;">${name}</strong><br><span style="font-size:22px;color:#ff5e62">${prize}</span>`;
     prizeModal.classList.add("show");
     }
 
