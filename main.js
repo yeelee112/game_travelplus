@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ctx.rotate(arc * i + arc / 2);
 
       ctx.fillStyle = usedPrizeIds.has(prize.id) ? "#666" : "white";
-      ctx.font = `bold ${radius * 0.08}px Arial`;
+      ctx.font = `bold ${radius * 0.07}px Arial`;
       ctx.fillText(prize.label, radius * 0.55, 5);
 
       ctx.restore();
