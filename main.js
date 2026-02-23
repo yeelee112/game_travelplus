@@ -44,23 +44,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ==============================
 
   const prizes = [
-    { id: 1, label: "500.000 VNĐ" },
-    { id: 2, label: "500.000 VNĐ" },
-    { id: 3, label: "400.000 VNĐ" },
-    { id: 4, label: "400.000 VNĐ" },
-    { id: 5, label: "300.000 VNĐ" },
-    { id: 6, label: "300.000 VNĐ" },
-    { id: 7, label: "300.000 VNĐ" },
-    { id: 8, label: "200.000 VNĐ" },
-    { id: 9, label: "200.000 VNĐ" },
-    { id: 10, label: "200.000 VNĐ" },
-    { id: 11, label: "100.000 VNĐ" },
-    { id: 12, label: "100.000 VNĐ" },
     { id: 13, label: "100.000 VNĐ" },
-    { id: 14, label: "100.000 VNĐ" },
-    { id: 15, label: "100.000 VNĐ" },
+    { id: 1, label: "500.000 VNĐ" },
     { id: 16, label: "50.000 VNĐ" },
-    { id: 17, label: "50.000 VNĐ" },
+     { id: 10, label: "200.000 VNĐ" },
+    { id: 3, label: "400.000 VNĐ" },
+   { id: 12, label: "100.000 VNĐ" },
+    { id: 5, label: "300.000 VNĐ" },
+     
+    { id: 6, label: "300.000 VNĐ" },
+  { id: 15, label: "100.000 VNĐ" },
+    { id: 8, label: "200.000 VNĐ" },
+    { id: 2, label: "500.000 VNĐ" },
+    { id: 9, label: "200.000 VNĐ" },
+   
+    { id: 11, label: "100.000 VNĐ" },
+    
+      { id: 7, label: "300.000 VNĐ" },
+    { id: 14, label: "100.000 VNĐ" },
+    
+    { id: 4, label: "400.000 VNĐ" },
+    { id: 17, label: "50.000 VNĐ" }
   ];
 
   const colors = ["#f94144","#f3722c","#f9c74f","#90be6d","#577590","#277da1"];
