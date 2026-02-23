@@ -177,3 +177,26 @@ ul li {
     opacity: 1;
   }
 }
+
+.corner-img {
+  position: fixed;
+  top: 0;
+  width: 20vw;
+  z-index: 1000;
+  pointer-events: none; /* không che nút bấm */
+}
+
+.left-img {
+  left: 0;
+}
+
+.right-img {
+  right: 0;
+}
+
+/* ===== Mobile scale nhỏ lại ===== */
+@media (max-width: 768px) {
+  .corner-img {
+    width: 80px;
+  }
+}
