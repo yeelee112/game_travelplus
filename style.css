@@ -65,7 +65,7 @@ canvas {
   position: absolute;
   top: -5px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) rotate(180deg);
   z-index: 10;
 }
 
