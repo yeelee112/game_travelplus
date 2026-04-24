@@ -2,32 +2,57 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+
+<!-- 🔥 QUAN TRỌNG -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Player</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
+  * {
+  box-sizing: border-box;
+}
 body {
   background:#020617;
   color:white;
   text-align:center;
   font-family:sans-serif;
+  margin:0;
+  padding:20px;
 }
 
 .container {
-  margin-top:50px;
+  max-width:500px;
+  margin:auto;
+}
+
+h2 {
+  font-size:28px;
 }
 
 input {
-  padding:10px;
+  width:100%;
+  padding:15px;
   font-size:18px;
-  margin:5px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
 }
 
 button {
-  padding:15px;
+  width:100%;
+  padding:18px;
   font-size:20px;
-  cursor:pointer;
-  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  margin-top:15px;
+  background:#3b82f6;
+  color:white;
+}
+
+button:disabled {
+  background:#555;
 }
 
 .hidden {
@@ -40,11 +65,10 @@ button {
 
 <div class="container">
 
-  <!-- NHẬP TÊN -->
+  <!-- LOGIN -->
   <div id="login">
-    <h2>👤 Nhập tên của bạn</h2>
+    <h2>👤 Nhập tên</h2>
     <input id="nameInput" placeholder="Tên của bạn">
-    <br>
     <button onclick="startGame()">Bắt đầu</button>
   </div>
 
@@ -52,7 +76,7 @@ button {
   <div id="game" class="hidden">
     <h2>🎮 Câu <span id="qnum">1</span></h2>
 
-    <input id="answer" placeholder="Nhập câu trả lời"><br>
+    <input id="answer" placeholder="Nhập câu trả lời">
     <button id="btn" onclick="submit()">Gửi</button>
 
     <p id="status"></p>
@@ -66,7 +90,6 @@ const sb = window.supabase.createClient(
   "sb_publishable_W1QYKpvgiJGueoG6lSbwPw_u_nrN4PS"
 )
 
-// ===== STATE =====
 let name = localStorage.getItem("name") || ""
 let id = localStorage.getItem("id") || crypto.randomUUID()
 
@@ -76,12 +99,11 @@ let currentQuestion = 1
 let hasAnswered = false
 let startTime = Date.now()
 
-// ===== START GAME =====
 function startGame(){
   const input = document.getElementById("nameInput").value.trim()
 
   if(!input){
-    alert("Vui lòng nhập tên!")
+    alert("Nhập tên đi 😄")
     return
   }
 
@@ -92,13 +114,11 @@ function startGame(){
   document.getElementById("game").classList.remove("hidden")
 }
 
-// nếu đã có name thì vào thẳng game
 if(name){
   document.getElementById("login").classList.add("hidden")
   document.getElementById("game").classList.remove("hidden")
 }
 
-// ===== SUBMIT =====
 async function submit(){
   if(hasAnswered) return
 
@@ -106,7 +126,7 @@ async function submit(){
 
   const answer = document.getElementById("answer").value
 
-  const { error } = await sb.from('answers').insert({
+  await sb.from('answers').insert({
     player_id:id,
     player_name:name,
     question_id:currentQuestion,
@@ -114,36 +134,26 @@ async function submit(){
     answer_time:Date.now()-startTime
   })
 
-  if(error){
-    if(error.code === '23505'){
-      console.log('Đã trả lời rồi')
-      return
-    }
-    console.error(error)
-  }
-
   document.getElementById("btn").disabled = true
   document.getElementById("status").innerText = "✅ Đã gửi!"
 }
 
-// ===== REALTIME =====
+// realtime
 sb.channel('game_state_channel')
 .on('postgres_changes',{
   event:'UPDATE',
   schema:'public',
   table:'game_state'
 },payload=>{
-  console.log("REALTIME:", payload)
-
   currentQuestion = payload.new.current_question
 
   document.getElementById("qnum").innerText = currentQuestion
-  document.getElementById("answer").value = ""
-  document.getElementById("btn").disabled = false
-  document.getElementById("status").innerText = ""
+  document.getElementById("answer").value=""
+  document.getElementById("btn").disabled=false
+  document.getElementById("status").innerText=""
 
-  hasAnswered = false
-  startTime = Date.now()
+  hasAnswered=false
+  startTime=Date.now()
 })
 .subscribe()
 </script>
