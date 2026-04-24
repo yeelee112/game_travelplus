@@ -6,20 +6,59 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-body { background:#020617; color:white; text-align:center; font-family:sans-serif; }
-input { padding:10px; font-size:18px; }
-button { padding:15px; font-size:20px; cursor:pointer; }
+body {
+  background:#020617;
+  color:white;
+  text-align:center;
+  font-family:sans-serif;
+}
+
+.container {
+  margin-top:50px;
+}
+
+input {
+  padding:10px;
+  font-size:18px;
+  margin:5px;
+}
+
+button {
+  padding:15px;
+  font-size:20px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.hidden {
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🎮 Câu <span id="qnum">1</span></h2>
+<div class="container">
 
-<input id="answer" placeholder="Nhập câu trả lời"><br>
-<button id="btn" onclick="submit()">Gửi</button>
+  <!-- NHẬP TÊN -->
+  <div id="login">
+    <h2>👤 Nhập tên của bạn</h2>
+    <input id="nameInput" placeholder="Tên của bạn">
+    <br>
+    <button onclick="startGame()">Bắt đầu</button>
+  </div>
 
-<p id="status"></p>
+  <!-- GAME -->
+  <div id="game" class="hidden">
+    <h2>🎮 Câu <span id="qnum">1</span></h2>
+
+    <input id="answer" placeholder="Nhập câu trả lời"><br>
+    <button id="btn" onclick="submit()">Gửi</button>
+
+    <p id="status"></p>
+  </div>
+
+</div>
 
 <script>
 const sb = window.supabase.createClient(
@@ -27,16 +66,39 @@ const sb = window.supabase.createClient(
   "sb_publishable_W1QYKpvgiJGueoG6lSbwPw_u_nrN4PS"
 )
 
-let name = localStorage.getItem("name") || prompt("Tên bạn")
-localStorage.setItem("name", name)
-
+// ===== STATE =====
+let name = localStorage.getItem("name") || ""
 let id = localStorage.getItem("id") || crypto.randomUUID()
+
 localStorage.setItem("id", id)
 
 let currentQuestion = 1
 let hasAnswered = false
 let startTime = Date.now()
 
+// ===== START GAME =====
+function startGame(){
+  const input = document.getElementById("nameInput").value.trim()
+
+  if(!input){
+    alert("Vui lòng nhập tên!")
+    return
+  }
+
+  name = input
+  localStorage.setItem("name", name)
+
+  document.getElementById("login").classList.add("hidden")
+  document.getElementById("game").classList.remove("hidden")
+}
+
+// nếu đã có name thì vào thẳng game
+if(name){
+  document.getElementById("login").classList.add("hidden")
+  document.getElementById("game").classList.remove("hidden")
+}
+
+// ===== SUBMIT =====
 async function submit(){
   if(hasAnswered) return
 
@@ -64,14 +126,14 @@ async function submit(){
   document.getElementById("status").innerText = "✅ Đã gửi!"
 }
 
-// 🔥 realtime game_state (debug full)
-sb.channel('game_state')
+// ===== REALTIME =====
+sb.channel('game_state_channel')
 .on('postgres_changes',{
-  event:'*',
+  event:'UPDATE',
   schema:'public',
   table:'game_state'
 },payload=>{
-  console.log("REALTIME GAME STATE:", payload)
+  console.log("REALTIME:", payload)
 
   currentQuestion = payload.new.current_question
 
