@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Player</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+body { background:#020617; color:white; text-align:center; font-family:sans-serif; }
+input { padding:10px; font-size:18px; }
+button { padding:15px; font-size:20px; cursor:pointer; }
+</style>
+</head>
+
+<body>
+
+<h2>🎮 Câu <span id="qnum">1</span></h2>
+
+<input id="answer" placeholder="Nhập câu trả lời"><br>
+<button id="btn" onclick="submit()">Gửi</button>
+
+<p id="status"></p>
+
+<script>
+const sb = window.supabase.createClient(
+  "https://uqmiaknrfrybkgiscadv.supabase.co",
+  "sb_publishable_W1QYKpvgiJGueoG6lSbwPw_u_nrN4PS"
+)
+
+let name = localStorage.getItem("name") || prompt("Tên bạn")
+localStorage.setItem("name", name)
+
+let id = localStorage.getItem("id") || crypto.randomUUID()
+localStorage.setItem("id", id)
+
+let currentQuestion = 1
+let hasAnswered = false
+let startTime = Date.now()
+
+async function submit(){
+  if(hasAnswered) return
+
+  hasAnswered = true
+
+  const answer = document.getElementById("answer").value
+
+  const { error } = await sb.from('answers').insert({
+    player_id:id,
+    player_name:name,
+    question_id:currentQuestion,
+    answer:answer,
+    answer_time:Date.now()-startTime
+  })
+
+  if(error){
+    if(error.code === '23505'){
+      console.log('Đã trả lời rồi')
+      return
+    }
+    console.error(error)
+  }
+
+  document.getElementById("btn").disabled = true
+  document.getElementById("status").innerText = "✅ Đã gửi!"
+}
+
+// 🔥 realtime game_state (debug full)
+sb.channel('game_state')
+.on('postgres_changes',{
+  event:'*',
+  schema:'public',
+  table:'game_state'
+},payload=>{
+  console.log("REALTIME GAME STATE:", payload)
+
+  currentQuestion = payload.new.current_question
+
+  document.getElementById("qnum").innerText = currentQuestion
+  document.getElementById("answer").value = ""
+  document.getElementById("btn").disabled = false
+  document.getElementById("status").innerText = ""
+
+  hasAnswered = false
+  startTime = Date.now()
+})
+.subscribe()
+</script>
+
+</body>
+</html>
