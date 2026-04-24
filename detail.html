@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chi tiết kết quả</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+body {
+  background:#020617;
+  color:white;
+  font-family:sans-serif;
+  padding:20px;
+}
+
+h1 {
+  text-align:center;
+}
+
+.question {
+  margin-top:30px;
+  padding:15px;
+  background:#0f172a;
+  border-radius:12px;
+}
+
+.answer {
+  padding:10px;
+  margin:5px 0;
+  border-radius:8px;
+  background:#1e293b;
+}
+
+/* đúng */
+.correct {
+  background:#16a34a;
+  color:white;
+}
+
+/* sai */
+.wrong {
+  background:#dc2626;
+  color:white;
+}
+
+.top1 { outline: 3px solid gold; }
+.top2 { outline: 3px solid silver; }
+.top3 { outline: 3px solid #cd7f32; }
+
+.small {
+  font-size:13px;
+  opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Chi tiết từng câu</h1>
+
+<div id="content"></div>
+
+<script>
+const sb = window.supabase.createClient(
+  "https://uqmiaknrfrybkgiscadv.supabase.co",
+  "sb_publishable_W1QYKpvgiJGueoG6lSbwPw_u_nrN4PS"
+)
+
+async function loadDetail(){
+
+  const { data, error } = await sb
+    .from('answers')
+    .select('*')
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  // ===== GROUP THEO CÂU =====
+  const map = {}
+
+  data.forEach(a=>{
+    if(!map[a.question_id]){
+      map[a.question_id] = []
+    }
+    map[a.question_id].push(a)
+  })
+
+  const content = document.getElementById("content")
+  content.innerHTML = ""
+
+  const questionIds = Object.keys(map).sort((a,b)=>a-b)
+
+  questionIds.forEach(qid => {
+
+    const list = map[qid]
+
+    // ===== TÁCH ĐÚNG / SAI =====
+    const correct = list
+      .filter(a => a.is_right == 1)
+      .sort((a,b)=>a.answer_time - b.answer_time)
+
+    const wrong = list
+      .filter(a => a.is_right == 0)
+      .sort((a,b)=>a.answer_time - b.answer_time)
+
+    const div = document.createElement("div")
+    div.className = "question"
+
+    let html = `<h2>🎮 Câu ${qid}</h2>`
+
+    // ===== HIỂN THỊ ĐÚNG =====
+    correct.forEach((a,i)=>{
+      html += `
+        <div class="answer correct ${i==0?'top1':i==1?'top2':i==2?'top3':''}">
+          ${i+1}. <b>${a.player_name}</b> - ${a.answer}
+          <div class="small">⏱ ${a.answer_time} ms</div>
+        </div>
+      `
+    })
+
+    // ===== HIỂN THỊ SAI =====
+    wrong.forEach((a,i)=>{
+      html += `
+        <div class="answer wrong">
+          ❌ <b>${a.player_name}</b> - ${a.answer}
+          <div class="small">⏱ ${a.answer_time} ms</div>
+        </div>
+      `
+    })
+
+    div.innerHTML = html
+    content.appendChild(div)
+  })
+}
+
+loadDetail()
+</script>
+
+</body>
+</html>
